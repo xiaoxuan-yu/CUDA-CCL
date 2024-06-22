@@ -1,6 +1,8 @@
 /*
+ * © 2024 Xiaoxuan Yu. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
  * execute the connected components algorithm and measure the time taken， the algorithm is provided via function pointer
- * Xiaoxuan, Yu, parcoii2024
+ * Foundations of Parallel Computing II, Spring 2024.
  */
 
 #pragma once

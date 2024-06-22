@@ -1,3 +1,9 @@
+/*
+ * © 2024 Xiaoxuan Yu. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
+ * Main function to execute the algorithms and measure the time taken
+ * Foundations of Parallel Computing II, Spring 2024.
+ */
 #include <iostream>
 #include <cstdlib>
 #include <string>

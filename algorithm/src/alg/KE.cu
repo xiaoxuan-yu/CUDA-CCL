@@ -1,3 +1,9 @@
+/*
+ * © 2024 Xiaoxuan Yu. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
+ * Refered to YACCLAB/cuda/src/labeling_allegretti_2018.cu, licensed under the BSD 3-Clause License.
+ * Foundations of Parallel Computing II, Spring 2024.
+ */
 #pragma once
 #include "Matrix.cuh"
 #include "UFTree.cuh"

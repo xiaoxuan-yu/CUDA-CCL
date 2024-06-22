@@ -1,6 +1,8 @@
 /*
+ * © 2024 Xiaoxuan Yu. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
  * A timer class to measure the time taken by the algorithm
- * Xiaoxuan, Yu, parcoii2024
+ * Foundations of Parallel Computing II, Spring 2024.
  */
 #pragma once
 #include <chrono>
@@ -43,14 +45,14 @@ public:
 };
 
 // overload the + operator to add two timers
-inline Timer operator+(const Timer& t1, const Timer& t2)
+inline Timer operator+(const Timer &t1, const Timer &t2)
 {
     Timer t;
     t.duration = t1.duration + t2.duration;
     return t;
 }
 
-inline Timer operator/(const Timer& t, int n)
+inline Timer operator/(const Timer &t, int n)
 {
     Timer t_;
     t_.duration = t.duration / n;

@@ -1,3 +1,9 @@
+/*
+ * © 2024 Xiaoxuan Yu. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
+ * Matrix data structure and related functions
+ * Foundations of Parallel Computing II, Spring 2024.
+ */
 #pragma once
 #include <memory>
 
