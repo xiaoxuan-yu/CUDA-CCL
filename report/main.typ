@@ -83,7 +83,7 @@
 
 
 #indent-par[
-  KE算法通过分阶段处理和并行化技术, 有效地克服了传统并查集在GPU上的并行化困难, 提高了连通域标记的效率。2018 年，Allegretti 等人给出了 8 连通的 KE 算法 @8708900，该算法主要对 @KE 中的 reduction 部分进行了改进，如 @KE8 所示。
+  KE算法通过分阶段处理和并行化技术, 有效地克服了传统并查集在GPU上的并行化困难, 提高了连通域标记的效率。2018 年，Allegretti 等人给出了 8 连通的 KE 算法 @8708900，该算法主要对@KE 中的 reduction 部分进行了改进，如@KE8 所示。
 ]
 #figure(
   image("./figure/KE8.png", width:80%),
@@ -189,8 +189,6 @@ def get_match_dict(labels_a, labels_b):
                 match_dict[label] = b_label
                 break
     return match_dict
-
-
 def map_with_dict(labels, match_dict):
     labels = labels.copy()
     for i in range(labels.shape[0]):
@@ -198,28 +196,26 @@ def map_with_dict(labels, match_dict):
             labels[i][j] = match_dict[labels[i][j]]
     return labels
 
-
-def map_label(labels_a, labels_b):
-    match_dict = get_match_dict(labels_a, labels_b)
-    labels_a = map_with_dict(labels_a, match_dict)
-    return np.all(labels_a == labels_b), labels_a
 ```
 #indent-par[在验证过程中，我们发现并行程序的结果与串行程序的结果一致，验证通过。对于每一个标签，我们将其重新映射到一个随机的颜色，用于可视化连通域标记问题的结果。以下给出对于作业中要求的四个样例的可视化结果。]
 #figure(
   grid(
-        columns: (auto, auto),
-        rows:    (auto, auto, auto, auto),
+        columns: (auto, 18em, 18em),
+        rows:    (auto, auto, auto, auto, auto, auto),
         gutter: 0em,
+        align: center+horizon,
         //[ #image("../validation/figure/serial_labels_debug.png", width:) ],
          //[ #image("../validation/figure/KE_labels_debug.png",   ) ],
-         [ #image("../validation/figure/serial_labels_1.png",   ) ],
-         [ #image("../validation/figure/KE_labels_1.png",   ) ],
-          [ #image("../validation/figure/serial_labels_2.png",   ) ],
-          [ #image("../validation/figure/KE_labels_2.png",   ) ],
-          [ #image("../validation/figure/serial_labels_3.png",   ) ],
-          [ #image("../validation/figure/KE_labels_3.png",   ) ],
-          [ #image("../validation/figure/serial_labels_4.png",   ) ],
-          [ #image("../validation/figure/KE_labels_4.png",   ) ],
+         [],[串行算法的可视化结果],[GPU并行的KE算法的可视化结果],
+         [],[#v(1em)],[#v(1em)],
+         [pixels_1.txt #h(2em)],[ #image("../validation/figure/serial_labels_1.png") ],
+         [ #image("../validation/figure/KE_labels_1.png") ],
+         [pixels_2.txt #h(2em)], [ #image("../validation/figure/serial_labels_2.png")],
+          [ #image("../validation/figure/KE_labels_2.png") ],
+         [pixels_3.txt #h(2em)], [ #image("../validation/figure/serial_labels_3.png")],
+          [ #image("../validation/figure/KE_labels_3.png") ],
+         [pixels_4.txt #h(2em)], [ #image("../validation/figure/serial_labels_4.png")],
+          [ #image("../validation/figure/KE_labels_4.png") ],
     ),
     caption:[连通域标记结果的可视化],
   )
@@ -327,9 +323,14 @@ def map_label(labels_a, labels_b):
 = 总结
 #indent-par[本次作业中，我们实现了基于 CUDA 的并行连通域标记算法。我们首先介绍了连通域标记问题的背景和串行算法，并详细介绍了 KE 算法的并行实现。我们通过正确性验证和性能测试验证了实现的正确性和性能，取得了相对于 CPU 串行代码百倍以上的加速效果。我们使用 `nsys` 和 `nsight-compute` 工具对程序进行了性能分析，发现了程序的性能瓶颈，并提出了进一步的优化方向。]
 
+#set heading(numbering: none)
+= 代码可用性
+本次作业的代码已经开源在 GitHub 上，地址为 https://github.com/xiaoxuan-yu/CUDA-CCL.
+
 #set text(lang: "en")
 // Add bibliography and create Bibiliography section
-#bibliography("bibliography.bib", title: "参考文献")
+= 参考文献
+#bibliography("bibliography.bib", title: none)
 
 
 
