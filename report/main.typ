@@ -108,7 +108,8 @@
    ├── main.cu
    └── serial.cxx
 ```
-`main.cu` 是并行版本的主程序入口，包含输入输出的处理，`Matrix` 对象的初始化以及 `KE` 算法的调用及性能评估。`include` 文件夹下包含了必要的功能函数和类，主要是用于包装矩阵的结构体 `Matrix` 以及其输出函数，计时器 `Timer` 以及用于性能评估的并行算法的运行器 `alg_runner`。`alg` 文件夹下包含了 `KE` 算法的实现以及并查集相关操作的实现。`serial.cxx` 是给定的串行版本的主程序，只是进行了简单的修改用于多次运行算法以进行性能评估。
+#indent-par[`main.cu` 是并行版本的主程序入口，包含输入输出的处理，`Matrix` 对象的初始化以及 `KE` 算法的调用及性能评估。`include` 文件夹下包含了必要的功能函数和类，主要是用于包装矩阵的结构体 `Matrix` 以及其输出函数，计时器 `Timer` 以及用于性能评估的并行算法的运行器 `alg_runner`。`alg` 文件夹下包含了 `KE` 算法的实现以及并查集相关操作的实现。`serial.cxx` 是给定的串行版本的主程序，只是进行了简单的修改用于多次运行算法以进行性能评估。]
+在我们的实现中，每个 CUDA `thread` 负责处理一个像素。我们选择了 `dim3(16,16,1)` 作为 `block` 的大小，并计算出所需的 `grid` 的形状 `dim3(cols+BLOCK_COLS-1)/BLOCK_COLS, (rows+BLOCK_ROWS-1)/BLOCK_ROWS,1)`，以保证开启的总线程数至少多于图像的像素数。
 
 == Komura-Equivalence 算法的实现
 #indent-par[如 @alg 描述，KE 算法主要包含三个不同操作：初始化、路径压缩和归并。在此，分别给出相应的伪代码。在 InitKernel 中，我们为每个像素分配初始标签。]
@@ -200,7 +201,7 @@ def map_with_dict(labels, match_dict):
 #indent-par[在验证过程中，我们发现并行程序的结果与串行程序的结果一致，验证通过。对于每一个标签，我们将其重新映射到一个随机的颜色，用于可视化连通域标记问题的结果。以下给出对于作业中要求的四个样例的可视化结果。]
 #figure(
   grid(
-        columns: (auto, 18em, 18em),
+        columns: (auto, 17em, 17em),
         rows:    (auto, auto, auto, auto, auto, auto),
         gutter: 0em,
         align: center+horizon,
@@ -221,7 +222,10 @@ def map_with_dict(labels, match_dict):
   )
 #indent-par[上述结果直观地证明，我们的并行程序实现了正确的连通域标记。]
 == 性能测试
-#indent-par[使用数院集群，我们完成了串行和GPU并行算法的性能测试。CPU 程序在单颗 E5-2650 v4 处理器上运行，计算节点内存为 128 GB；GPU 程序在一块 NVIDIA Titan XP GPU 上运行，其具有 3840 个 CUDA core, 12 GB GDDR5X 现存和 1582 MHz 的主频，计算节点内存为 256 GB。以下给出串行和并行算法的性能测试结果，如 @perf 所示。原始文件见 `perf/CPU_CCL.out` 和 `perf/GPU_CCL.out`。]
+#indent-par[使用数院集群，我们完成了串行和GPU并行算法的性能测试。CPU 程序在单颗 E5-2650 v4 处理器上运行，计算节点内存为 128 GB；GPU 程序在一块 NVIDIA Titan XP GPU 上运行，其具有 3840 个 CUDA core, 12 GB GDDR5X 现存和 1582 MHz 的主频，计算节点内存为 256 GB。所有程序使用 `GCC Compiler 9.3.0` 和 `nvcc 11.3` 进行编译。]
+
+以下给出串行和并行算法的性能测试结果，如@perf 所示。受计算资源限制，串行算法运行20次取平均运行时间，而GPU并行算法运行100次取平均时间作为测试结果。性能测试结果的原始文件见 `perf/CPU_CCL.out` 和 `perf/GPU_CCL.out`。
+
 #let toprule = hlinex(stroke: (thickness: 0.08em))
 #let bottomrule = toprule
 #let midrule = hlinex(stroke: (thickness: 0.05em))
@@ -320,6 +324,8 @@ def map_with_dict(labels, match_dict):
 ) <Compute>
 
 #indent-par[可以看到绝大多数操作是用于逻辑运算和位运算的 ALU 操作，同时涉及较高比例的条件判断、循环体等带来的 ADU 操作。这意味着在当前算法的框架下，此处的性能瓶颈优化潜力相对有限。在总调用次数难以减少的情况下，进一步的优化可能需要考虑对于逻辑运算和位运算的优化，例如使用高效的掩码位运算代替条件判断等。]
+
+除此之外，由于在整个运算过程中，图形的原始数组 `img` 实际上是只读的，同时也是与 Device Memory 交互的重要来源，因而，通过使用 CUDA 的纹理内存以加速访问，也是一个潜在的优化方向。此外，由于纹理内存对二维数据的访问有着天然的优势，因此，可以考虑将 `img` 和 `labels` 从一维数组转换为二维数组，以进一步提高访存效率和缓存的命中率。
 = 总结
 #indent-par[本次作业中，我们实现了基于 CUDA 的并行连通域标记算法。我们首先介绍了连通域标记问题的背景和串行算法，并详细介绍了 KE 算法的并行实现。我们通过正确性验证和性能测试验证了实现的正确性和性能，取得了相对于 CPU 串行代码百倍以上的加速效果。我们使用 `nsys` 和 `nsight-compute` 工具对程序进行了性能分析，发现了程序的性能瓶颈，并提出了进一步的优化方向。]
 
