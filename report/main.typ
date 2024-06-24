@@ -221,7 +221,7 @@ def map_with_dict(labels, match_dict):
   )
 #indent-par[上述结果直观地证明，我们的并行程序实现了正确的连通域标记。]
 == 性能测试
-#indent-par[使用数院集群，我们完成了串行和GPU并行算法的性能测试。CPU 程序在单颗 E5-2650 v4 处理器上运行，计算节点内存为 128 GB；GPU 程序在一块 NVIDIA Titan XP GPU 上运行，其具有 3840 个 CUDA core, 12 GB GDDR5X 现存和 1582 MHz 的主频，计算节点内存为 256 GB。以下给出串行和并行算法的性能测试结果，如 @perf 所示。原始文件见 `CPU_CCL.out` 和 `GPU_CCL.out`。]
+#indent-par[使用数院集群，我们完成了串行和GPU并行算法的性能测试。CPU 程序在单颗 E5-2650 v4 处理器上运行，计算节点内存为 128 GB；GPU 程序在一块 NVIDIA Titan XP GPU 上运行，其具有 3840 个 CUDA core, 12 GB GDDR5X 现存和 1582 MHz 的主频，计算节点内存为 256 GB。以下给出串行和并行算法的性能测试结果，如 @perf 所示。原始文件见 `perf/CPU_CCL.out` 和 `perf/GPU_CCL.out`。]
 #let toprule = hlinex(stroke: (thickness: 0.08em))
 #let bottomrule = toprule
 #let midrule = hlinex(stroke: (thickness: 0.05em))
